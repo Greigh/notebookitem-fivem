@@ -180,7 +180,7 @@ notebook_item/
 
 ## 🔄 **Changelog**
 
-### **v2.0.0 - Enhanced Multi-Item System**
+### **v1.0.1 - Enhanced Multi-Item System**
 
 - ✅ Added journal, business card, and photo items
 - ✅ Individual character limits per item type

@@ -2,7 +2,7 @@ fx_version 'cerulean'
 game 'gta5'
 
 name 'notebook_item'
-author 'Your Name'
+author 'Greigh'
 description 'Enhanced multi-item resource with notebook, journal, business card, and photo functionality'
 version '1.0.1'
 
