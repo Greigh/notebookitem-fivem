@@ -1,0 +1,82 @@
+-- Enhanced Multi-Item System for ox_inventory
+-- 
+-- IMPORTANT: This file contains EXAMPLE ITEM DEFINITIONS ONLY
+-- You need to copy these definitions to your own ox_inventory installation
+-- 
+-- Installation:
+-- 1. Download and install ox_inventory from: https://github.com/overextended/ox_inventory
+-- 2. Copy the item definitions below to your ox_inventory/data/items.lua file
+-- 3. Restart your server
+-- 
+-- DO NOT redistribute ox_inventory itself - always direct users to the official repository
+--
+
+-- Personal Notebook (Original)
+['notebook'] = {
+    label = 'Personal Notebook',
+    weight = 200,
+    stack = false,
+    close = true,
+    description = 'A notebook where you can write and store personal notes. Use it to add or view your notes.',
+    consume = 0,
+    client = {
+        export = 'notebook_item.notebook'
+    }
+},
+
+-- Daily Journal (Extended version)
+['journal'] = {
+    label = 'Daily Journal',
+    weight = 300,
+    stack = false,
+    close = true,
+    description = 'A journal for recording daily thoughts and experiences. Holds longer entries than a regular notebook.',
+    consume = 0,
+    client = {
+        export = 'notebook_item.journal'
+    }
+},
+
+-- Business Card
+['businesscard'] = {
+    label = 'Business Card',
+    weight = 10,
+    stack = false,
+    close = true,
+    description = 'A business card that can store contact information and professional details.',
+    consume = 0,
+    client = {
+        export = 'notebook_item.businesscard'
+    }
+},
+
+-- Personal Photo
+['photo'] = {
+    label = 'Personal Photo',
+    weight = 50,
+    stack = false,
+    close = true,
+    description = 'A photo with space to write a description or memory. Perfect for storing special moments.',
+    consume = 0,
+    client = {
+        export = 'notebook_item.photo'
+    }
+},
+
+-- Alternative format if server uses a different items structure:
+-- 
+-- {
+--     name = 'notebook',
+--     label = 'Personal Notebook',
+--     weight = 200,
+--     type = 'item',
+--     image = 'notebook.png',
+--     unique = false,
+--     useable = true,
+--     shouldClose = true,
+--     combinable = nil,
+--     description = 'A notebook where you can write and store personal notes. Use it to add or view your notes.',
+--     client = {
+--         export = 'notebook_item.notebook'
+--     }
+-- }

@@ -1,0 +1,38 @@
+name: Validate Resource
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Make validation script executable
+        run: chmod +x validate.sh
+
+      - name: Validate resource structure
+        run: ./validate.sh
+
+      - name: Check Lua syntax
+        run: |
+          # Install lua if needed
+          sudo apt-get update
+          sudo apt-get install -y lua5.4
+
+          # Check syntax of all Lua files
+          find notebook_item -name "*.lua" -exec lua -l {} \; 2>/dev/null || {
+            echo "Lua syntax validation failed"
+            exit 1
+          }
+
+      - name: Archive resource
+        uses: actions/upload-artifact@v4
+        with:
+          name: notebook_item-resource
+          path: notebook_item/
