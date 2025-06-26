@@ -8,7 +8,6 @@
 -- 2. Copy the item definitions below to your ox_inventory/data/items.lua file
 -- 3. Restart your server
 -- 
--- DO NOT redistribute ox_inventory itself - always direct users to the official repository
 --
 
 -- Personal Notebook (Original)
