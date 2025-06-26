@@ -1,6 +1,6 @@
 # Enhanced Multi-Item FiveM Resource
 
-A comprehensive FiveM resource for qbox framework that adds multiple usable items with metadata storage capabilities. This enhanced version supports notebooks, journals, business cards, and photo descriptions.
+A comprehensive FiveM resource for qbox framework that adds multiple usable items with metadata storage capabilities. This enhanced version supports notebooks, journals, business cards, and photo descriptions. Currently at version 1.0.1, this resource is based off of a month or so of learning and development, and is designed to be easily integrated into existing FiveM roleplay servers.
 
 ## 🆕 **Enhanced Features**
 
