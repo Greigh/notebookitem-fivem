@@ -15,7 +15,7 @@ CYAN='\033[0;36m'
 NC='\033[0m'
 
 # Configuration
-BUILD_VERSION="1.0.0"
+BUILD_VERSION="1.0.1"
 RESOURCE_NAME="notebook_item"
 BUILD_DIR="build"
 DIST_DIR="dist"
