@@ -26,7 +26,6 @@ required_files=(
     "notebook_item/shared/advanced.lua"
     "items.txt"
     "README.md"
-    "README_ENHANCED.md"
     "HOW_IT_WORKS.md"
     "TECHNICAL_OVERVIEW.md"
     "INTEGRATION_GUIDE.md"
