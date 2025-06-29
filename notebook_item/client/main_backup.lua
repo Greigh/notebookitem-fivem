@@ -1,10 +1,64 @@
 local config = require 'shared.config'
 
--- Function declarations
-local handleItemUsage, displayContent, promptForContent
+-- Export functions for different item types
+exports('notebook', function(data, slot)
+    handleItemUsage(data, slot, 'notebook')
+end)
+
+exports('journal', function(data, slot)
+    handleItemUsage(data, slot, 'journal')
+end)
+
+exports('businesscard', function(data, slot)
+    handleItemUsage(data, slot, 'businesscard')
+end)
+
+exports('photo', function(data, slot)
+    handleItemUsage(data, slot, 'photo')
+end)
+
+-- Main handler for all notebook item types only
+local function handleItemUsage(data, slot, itemType)
+    local playerData = exports.qbx_core:GetPlayerData()
+    if not playerData then return end
+
+    -- Validate that this is a notebook item
+    if not config.isNotebookItem(itemType) then
+        lib.notify({
+            title = 'Error',
+            description = 'This resource only handles notebook items',
+            type = 'error',
+            duration = config.notifications.error.duration
+        })
+        print(('[notebook_item] Rejected non-notebook item: %s'):format(itemType))
+        return
+    end
+
+    local itemConfig = config.items[itemType]
+    if not itemConfig then
+        lib.notify({
+            title = 'Error',
+            description = 'Unknown notebook item type: ' .. itemType,
+            type = 'error',
+            duration = config.notifications.error.duration
+        })
+        return
+    end
+
+    local itemData = data
+    local hasContent = itemData.info and itemData.info.content
+
+    if hasContent then
+        -- Item has content stored, display it to the player
+        displayContent(itemData.info.content, itemConfig, itemData.info.timestamp)
+    else
+        -- Item doesn't have content, prompt user to add some
+        promptForContent(slot, itemData, itemConfig)
+    end
+end
 
 -- Function to display the stored content
-displayContent = function(content, itemConfig, timestamp)
+local function displayContent(content, itemConfig, timestamp)
     local timestampText = timestamp and ('\n\nSaved: ' .. timestamp) or ''
 
     lib.alertDialog({
@@ -17,7 +71,7 @@ displayContent = function(content, itemConfig, timestamp)
 end
 
 -- Function to prompt user for input and store the content
-promptForContent = function(slot, itemData, itemConfig)
+function promptForContent(slot, itemData, itemConfig)
     local input = lib.inputDialog(itemConfig.icon .. ' ' .. itemConfig.label, {
         {
             type = 'textarea',
@@ -51,61 +105,6 @@ promptForContent = function(slot, itemData, itemConfig)
         })
     end
 end
-
--- Main handler for all notebook item types only
-handleItemUsage = function(data, slot, itemType)
-    local playerData = exports.qbx_core:GetPlayerData()
-    if not playerData then return end
-
-    -- Validate that this is a notebook item
-    if not config.isNotebookItem(itemType) then
-        exports.ox_lib:notify({
-            title = 'Unsupported Item',
-            description = 'This item is not supported by the notebook system',
-            type = 'error'
-        })
-        return
-    end
-
-    local itemConfig = config.items[itemType]
-    if not itemConfig then
-        exports.ox_lib:notify({
-            title = 'Error',
-            description = 'Unknown notebook item type: ' .. itemType,
-            type = 'error',
-            duration = config.notifications.error.duration
-        })
-        return
-    end
-
-    local itemData = data
-    local hasContent = itemData.info and itemData.info.content
-
-    if hasContent then
-        -- Item has content stored, display it to the player
-        displayContent(itemData.info.content, itemConfig, itemData.info.timestamp)
-    else
-        -- Item doesn't have content, prompt user to add some
-        promptForContent(slot, itemData, itemConfig)
-    end
-end
-
--- Export functions for different item types
-exports('notebook', function(data, slot)
-    handleItemUsage(data, slot, 'notebook')
-end)
-
-exports('journal', function(data, slot)
-    handleItemUsage(data, slot, 'journal')
-end)
-
-exports('businesscard', function(data, slot)
-    handleItemUsage(data, slot, 'businesscard')
-end)
-
-exports('photo', function(data, slot)
-    handleItemUsage(data, slot, 'photo')
-end)
 
 -- Handle content update response from server
 RegisterNetEvent('notebook_item:contentUpdated', function(success, message)

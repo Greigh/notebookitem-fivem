@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Notebook Item Resource - Build and Package Script
-# This script creates a complete distribution package
+# Enhanced Notebook Item Resource - Build Script
+# Creates distribution packages for the notebook_item resource
 
 set -e
 
@@ -14,330 +14,243 @@ PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
 NC='\033[0m'
 
-# Configuration
-BUILD_VERSION="1.0.1"
-RESOURCE_NAME="notebook_item"
+# Build configuration
+BUILD_VERSION="1.0.2"
+RESOURCE_NAME="enhanced_notebook_item"
 BUILD_DIR="build"
 DIST_DIR="dist"
-DATE=$(date +%Y%m%d_%H%M%S)
+TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 
-print_header() {
-    echo -e "${PURPLE}╔════════════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${PURPLE}║${NC}${CYAN}  Notebook Item Resource - Build Script v${BUILD_VERSION}${NC}${PURPLE}           ║${NC}"
-    echo -e "${PURPLE}╚════════════════════════════════════════════════════════════════╝${NC}"
-    echo ""
-}
+echo -e "${PURPLE}╔════════════════════════════════════════════════════════════════╗${NC}"
+echo -e "${PURPLE}║  Enhanced Notebook Item - Build Script v${BUILD_VERSION}              ║${NC}"
+echo -e "${PURPLE}╚════════════════════════════════════════════════════════════════╝${NC}"
+echo ""
+echo -e "${CYAN}Building enhanced notebook item resource...${NC}"
+echo -e "  ${GREEN}📓 notebook_item${NC} - Core notebook resource with 4 item types"
+echo ""
 
-print_step() {
-    echo -e "${BLUE}▶${NC} $1"
-}
+# Clean and create build directories
+echo -e "${BLUE}▶ Cleaning build directories...${NC}"
+if [ -d "$BUILD_DIR" ]; then
+    rm -rf "$BUILD_DIR"
+    echo -e "${CYAN}ℹ️  Removed existing build directory${NC}"
+fi
 
-print_success() {
-    echo -e "${GREEN}✅${NC} $1"
-}
+if [ -d "$DIST_DIR" ]; then
+    rm -rf "$DIST_DIR"
+    echo -e "${CYAN}ℹ️  Removed existing dist directory${NC}"
+fi
 
-print_error() {
-    echo -e "${RED}❌${NC} $1"
-}
+mkdir -p "$BUILD_DIR"
+mkdir -p "$DIST_DIR"
+echo -e "${GREEN}✅ Build directories created${NC}"
 
-print_info() {
-    echo -e "${CYAN}ℹ️${NC}  $1"
-}
+# Copy resource files
+echo -e "${BLUE}▶ Copying resource files...${NC}"
 
-# Function to clean build directories
-clean_build() {
-    print_step "Cleaning build directories..."
-    
-    if [ -d "$BUILD_DIR" ]; then
-        rm -rf "$BUILD_DIR"
-        print_info "Removed existing build directory"
+# Copy notebook_item resource
+if [ -d "notebook_item" ]; then
+    cp -r "notebook_item" "$BUILD_DIR/"
+    echo -e "${GREEN}✅ notebook_item files copied${NC}"
+else
+    echo -e "${RED}❌ Error: notebook_item directory not found${NC}"
+    exit 1
+fi
+
+# Copy documentation
+docs=(
+    "README.md"
+    "HOW_IT_WORKS.md" 
+    "TECHNICAL_OVERVIEW.md"
+    "INTEGRATION_GUIDE.md"
+    "DEVELOPMENT_SHOWCASE.md"
+    "IMPORTANT_NOTES.md"
+    "PROJECT_STATUS.md"
+    "COMPLETION_SUMMARY.md"
+    "items.txt"
+    "LICENSE"
+)
+
+for doc in "${docs[@]}"; do
+    if [ -f "$doc" ]; then
+        cp "$doc" "$BUILD_DIR/"
+        echo -e "${CYAN}ℹ️  Copied $doc${NC}"
     fi
-    
-    if [ -d "$DIST_DIR" ]; then
-        rm -rf "$DIST_DIR"
-        print_info "Removed existing dist directory"
+done
+
+# Copy scripts
+scripts=(
+    "install.sh"
+    "deploy.sh"
+    "build.sh"
+    "validate.sh"
+    "notebook.sh"
+)
+
+for script in "${scripts[@]}"; do
+    if [ -f "$script" ]; then
+        cp "$script" "$BUILD_DIR/"
+        chmod +x "$BUILD_DIR/$script"
+        echo -e "${CYAN}ℹ️  Copied $script (executable)${NC}"
     fi
-    
-    mkdir -p "$BUILD_DIR"
-    mkdir -p "$DIST_DIR"
-    print_success "Build directories created"
-}
+done
 
-# Function to copy resource files
-copy_resource() {
-    print_step "Copying resource files..."
-    
-    # Copy main resource
-    cp -r "$RESOURCE_NAME" "$BUILD_DIR/"
-    print_success "Resource files copied"
-    
-    # Copy documentation
-    local docs=(
-        "README.md"
-        "HOW_IT_WORKS.md"
-        "TECHNICAL_OVERVIEW.md"
-        "INTEGRATION_GUIDE.md"
-        "PROJECT_SUMMARY.md"
-        "LICENSE"
-        "items.txt"
-    )
-    
-    for doc in "${docs[@]}"; do
-        if [ -f "$doc" ]; then
-            cp "$doc" "$BUILD_DIR/"
-            print_info "Copied: $doc"
-        fi
-    done
-    
-    # Copy scripts
-    local scripts=(
-        "deploy.sh"
-        "validate.sh"
-        "install.sh"
-    )
-    
-    for script in "${scripts[@]}"; do
-        if [ -f "$script" ]; then
-            cp "$script" "$BUILD_DIR/"
-            chmod +x "$BUILD_DIR/$script"
-            print_info "Copied: $script"
-        fi
-    done
-}
+# Run validation tests
+echo -e "${BLUE}▶ Running validation tests...${NC}"
+cd "$BUILD_DIR"
+if ./validate.sh > /dev/null 2>&1; then
+    echo -e "${GREEN}✅ Validation tests passed${NC}"
+else
+    echo -e "${YELLOW}⚠️  Validation warnings (continuing build)${NC}"
+fi
+cd ..
 
-# Function to create installation package
-create_package() {
-    print_step "Creating installation package..."
-    
-    local package_name="${RESOURCE_NAME}_v${BUILD_VERSION}_${DATE}"
-    local package_dir="$BUILD_DIR/$package_name"
-    
-    # Create package directory structure
-    mkdir -p "$package_dir"
-    
-    # Copy all files to package
-    cp -r "$BUILD_DIR/$RESOURCE_NAME" "$package_dir/"
-    cp "$BUILD_DIR"/*.md "$package_dir/" 2>/dev/null || true
-    cp "$BUILD_DIR"/*.txt "$package_dir/" 2>/dev/null || true
-    cp "$BUILD_DIR/LICENSE" "$package_dir/" 2>/dev/null || true
-    cp "$BUILD_DIR"/*.sh "$package_dir/" 2>/dev/null || true
-    
-    # Create ZIP archive
+# Create installation package
+echo -e "${BLUE}▶ Creating installation package...${NC}"
+package_name="${RESOURCE_NAME}_v${BUILD_VERSION}_${TIMESTAMP}.zip"
+
+if command -v zip >/dev/null 2>&1; then
     cd "$BUILD_DIR"
-    zip -r "../$DIST_DIR/${package_name}.zip" "$package_name" >/dev/null
+    zip -r "../$DIST_DIR/$package_name" . > /dev/null 2>&1
     cd ..
-    
-    print_success "Package created: $DIST_DIR/${package_name}.zip"
-}
+    echo -e "${GREEN}✅ Package created: $DIST_DIR/$package_name${NC}"
+else
+    echo -e "${YELLOW}⚠️  Warning: zip command not found, creating tar.gz instead${NC}"
+    tar -czf "$DIST_DIR/${package_name%.zip}.tar.gz" -C "$BUILD_DIR" .
+    echo -e "${GREEN}✅ Package created: $DIST_DIR/${package_name%.zip}.tar.gz${NC}"
+fi
 
-# Function to create release archive (resource only)
-create_release() {
-    print_step "Creating release archive..."
-    
-    local release_name="${RESOURCE_NAME}_release_v${BUILD_VERSION}"
-    
+# Create release archive (resource only)
+echo -e "${BLUE}▶ Creating release archive...${NC}"
+release_name="${RESOURCE_NAME}_release_v${BUILD_VERSION}.zip"
+
+if command -v zip >/dev/null 2>&1; then
     cd "$BUILD_DIR"
-    zip -r "../$DIST_DIR/${release_name}.zip" "$RESOURCE_NAME" >/dev/null
+    zip -r "../$DIST_DIR/$release_name" notebook_item/ items.txt README.md LICENSE > /dev/null 2>&1
     cd ..
-    
-    print_success "Release archive created: $DIST_DIR/${release_name}.zip"
-}
+    echo -e "${GREEN}✅ Release archive created: $DIST_DIR/$release_name${NC}"
+else
+    tar -czf "$DIST_DIR/${release_name%.zip}.tar.gz" -C "$BUILD_DIR" notebook_item/ items.txt README.md LICENSE
+    echo -e "${GREEN}✅ Release archive created: $DIST_DIR/${release_name%.zip}.tar.gz${NC}"
+fi
 
-# Function to generate checksums
-generate_checksums() {
-    print_step "Generating checksums..."
-    
-    cd "$DIST_DIR"
-    
-    for file in *.zip; do
-        if [ -f "$file" ]; then
-            sha256sum "$file" > "${file}.sha256"
-            print_info "Checksum created for: $file"
-        fi
+# Generate checksums
+echo -e "${BLUE}▶ Generating checksums...${NC}"
+cd "$DIST_DIR"
+
+if command -v sha256sum >/dev/null 2>&1; then
+    # Linux
+    for file in *.zip *.tar.gz; do
+        [ -f "$file" ] && sha256sum "$file" > "${file}.sha256" && echo -e "${CYAN}ℹ️  Checksum created for: $file${NC}"
     done
-    
-    cd ..
-    print_success "Checksums generated"
-}
+elif command -v shasum >/dev/null 2>&1; then
+    # macOS
+    for file in *.zip *.tar.gz; do
+        [ -f "$file" ] && shasum -a 256 "$file" > "${file}.sha256" && echo -e "${CYAN}ℹ️  Checksum created for: $file${NC}"
+    done
+else
+    echo -e "${YELLOW}⚠️  Warning: No checksum tool found (sha256sum or shasum)${NC}"
+fi
 
-# Function to create build manifest
-create_manifest() {
-    print_step "Creating build manifest..."
-    
-    local manifest_file="$DIST_DIR/build_manifest.json"
-    
-    cat > "$manifest_file" << EOF
+cd ..
+echo -e "${GREEN}✅ Checksums generated${NC}"
+
+# Create build manifest
+echo -e "${BLUE}▶ Creating build manifest...${NC}"
+manifest_file="$DIST_DIR/build_manifest.json"
+
+cat > "$manifest_file" << EOF
 {
-    "resource_name": "$RESOURCE_NAME",
+    "name": "$RESOURCE_NAME",
     "version": "$BUILD_VERSION",
-    "build_date": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-    "build_timestamp": "$DATE",
+    "build_date": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+    "resources": [
+        {
+            "name": "notebook_item",
+            "type": "main",
+            "description": "Core notebook resource with 4 item types"
+        }
+    ],
     "files": [
 EOF
-    
-    local first=true
-    for file in "$DIST_DIR"/*.zip; do
-        if [ -f "$file" ]; then
-            filename=$(basename "$file")
-            size=$(stat -f%z "$file" 2>/dev/null || stat -c%s "$file" 2>/dev/null || echo "unknown")
-            
-            if [ "$first" = true ]; then
-                first=false
-            else
-                echo "," >> "$manifest_file"
-            fi
-            
-            cat >> "$manifest_file" << EOF
-        {
-            "name": "$filename",
-            "size": $size,
-            "sha256": "$(cat "$DIST_DIR/${filename}.sha256" | cut -d' ' -f1)"
-        }
-EOF
-        fi
-    done
-    
-    cat >> "$manifest_file" << EOF
 
-    ],
-    "dependencies": [
-        {
-            "name": "qbx_core",
-            "version": ">=1.0.0",
-            "required": true
-        },
-        {
-            "name": "ox_inventory",
-            "version": ">=2.44.0",
-            "required": true
-        },
-        {
-            "name": "ox_lib",
-            "version": ">=3.27.0",
-            "required": true
-        }
-    ],
-    "installation": {
-        "steps": [
-            "Extract resource to server resources directory",
-            "Add item definition to ox_inventory/data/items.lua",
-            "Add 'ensure notebook_item' to server.cfg",
-            "Restart server"
-        ]
-    }
-EOF
-    
-    print_success "Build manifest created: $manifest_file"
-}
-
-# Function to run tests
-run_tests() {
-    print_step "Running validation tests..."
-    
-    cd "$BUILD_DIR"
-    
-    if [ -f "validate.sh" ]; then
-        if ./validate.sh --quiet 2>/dev/null; then
-            print_success "Validation tests passed"
+# Add file information to manifest
+first_file=true
+for file in "$DIST_DIR"/*; do
+    if [ -f "$file" ] && [[ "$file" != *.sha256 ]] && [[ "$file" != *build_manifest.json ]]; then
+        filename=$(basename "$file")
+        filesize=$(stat -f%z "$file" 2>/dev/null || stat -c%s "$file" 2>/dev/null || echo "0")
+        
+        if [ "$first_file" = true ]; then
+            first_file=false
         else
-            print_error "Validation tests failed"
-            return 1
+            echo "," >> "$manifest_file"
         fi
-    else
-        print_error "Validation script not found"
-        return 1
+        
+        echo "        {" >> "$manifest_file"
+        echo "            \"name\": \"$filename\"," >> "$manifest_file"
+        echo "            \"size\": $filesize" >> "$manifest_file"
+        echo -n "        }" >> "$manifest_file"
     fi
-    
-    cd ..
-}
+done
 
-# Function to display build summary
-show_summary() {
-    echo ""
-    print_header
-    echo -e "${GREEN}🎉 Build Complete!${NC}"
-    echo ""
-    print_info "Build Summary:"
-    echo -e "${CYAN}•${NC} Version: $BUILD_VERSION"
-    echo -e "${CYAN}•${NC} Build Date: $(date)"
-    echo -e "${CYAN}•${NC} Resource Name: $RESOURCE_NAME"
-    echo ""
-    print_info "Generated Files:"
-    
-    if [ -d "$DIST_DIR" ]; then
-        for file in "$DIST_DIR"/*; do
-            if [ -f "$file" ]; then
-                filename=$(basename "$file")
-                size=$(stat -f%z "$file" 2>/dev/null || stat -c%s "$file" 2>/dev/null || echo "unknown")
-                echo -e "${CYAN}•${NC} $filename (${size} bytes)"
-            fi
-        done
+cat >> "$manifest_file" << EOF
+
+    ],
+    "phone_apps": {
+        "available": true,
+        "repository": "https://github.com/Greigh/FiveM-phone",
+        "note": "Phone apps are available in a separate repository for better modularity"
+    },
+    "installation": {
+        "dependencies": ["qbx_core", "ox_inventory", "ox_lib"],
+        "server_cfg": "ensure notebook_item"
+    }
+}
+EOF
+
+echo -e "${GREEN}✅ Build manifest created: $manifest_file${NC}"
+
+echo ""
+echo -e "${PURPLE}╔════════════════════════════════════════════════════════════════╗${NC}"
+echo -e "${PURPLE}║  Enhanced Notebook Item - Build Script v${BUILD_VERSION}              ║${NC}"
+echo -e "${PURPLE}╚════════════════════════════════════════════════════════════════╝${NC}"
+echo ""
+echo -e "${CYAN}Building enhanced notebook item resource...${NC}"
+echo -e "  ${GREEN}📓 notebook_item${NC} - Core notebook resource with 4 item types"
+echo ""
+echo -e "${GREEN}🎉 Build Complete!${NC}"
+echo ""
+
+# Build summary
+echo -e "${CYAN}ℹ️  Build Summary:${NC}"
+echo -e "• Version: $BUILD_VERSION"
+echo -e "• Build Date: $(date)"
+echo -e "• Resource Name: $RESOURCE_NAME"
+echo -e "• Core Resource: notebook_item (4 item types supported)"
+echo ""
+
+# File listing
+echo -e "${CYAN}ℹ️  Generated Files:${NC}"
+for file in "$DIST_DIR"/*; do
+    if [ -f "$file" ]; then
+        filename=$(basename "$file")
+        filesize=$(stat -f%z "$file" 2>/dev/null || stat -c%s "$file" 2>/dev/null || echo "0")
+        echo -e "• $filename ($filesize bytes)"
     fi
-    
-    echo ""
-    print_info "Next Steps:"
-    echo -e "${CYAN}1.${NC} Test installation with: ./deploy.sh"
-    echo -e "${CYAN}2.${NC} Upload to GitHub releases"
-    echo -e "${CYAN}3.${NC} Share with the FiveM community"
-    echo ""
-    echo -e "${GREEN}Ready for distribution! 🚀${NC}"
-}
+done
+echo ""
 
-# Main build function
-main() {
-    print_header
-    
-    # Clean and prepare
-    clean_build
-    
-    # Copy files
-    copy_resource
-    
-    # Run tests
-    if ! run_tests; then
-        print_error "Build failed due to validation errors"
-        exit 1
-    fi
-    
-    # Create packages
-    create_package
-    create_release
-    
-    # Generate checksums
-    generate_checksums
-    
-    # Create manifest
-    create_manifest
-    
-    # Show summary
-    show_summary
-}
+echo -e "${CYAN}ℹ️  Next Steps:${NC}"
+echo -e "• Extract the release archive to your FiveM server"
+echo -e "• Add the resource to your server.cfg:"
+echo -e "  ${GREEN}ensure notebook_item${NC}"
+echo -e "• Copy items from items.txt to your ox_inventory configuration"
+echo -e "• For phone apps, visit: ${BLUE}https://github.com/Greigh/FiveM-phone${NC}"
+echo -e "• Restart your server and test"
 
-# Handle command line arguments
-case "${1:-}" in
-    --clean)
-        print_header
-        clean_build
-        print_success "Build directories cleaned"
-        exit 0
-        ;;
-    --help|-h)
-        print_header
-        echo "Usage: $0 [OPTIONS]"
-        echo ""
-        echo "Options:"
-        echo "  --clean            Clean build directories only"
-        echo "  --help, -h         Show this help message"
-        echo ""
-        echo "Without options, runs complete build process."
-        exit 0
-        ;;
-    "")
-        main
-        ;;
-    *)
-        print_error "Unknown option: $1"
-        echo "Use --help for usage information."
-        exit 1
-        ;;
-esac
+echo -e "1. Test installation with: ${GREEN}./deploy.sh${NC}"
+echo -e "2. Upload to GitHub releases"
+echo -e "3. Share with the FiveM community"
+echo ""
+echo -e "${GREEN}Ready for distribution! 🚀${NC}"

@@ -1,7 +1,10 @@
 #!/bin/bash
 
-# Notebook Item Resource - Complete Setup Script
-# This script handles validation, installation, and configuration of the notebook item resource
+# FiveM Resource Suite - Complete Deployment Script
+# This script handles validation, installation, and configuration of all three resources:
+# - notebook_item (main resource)
+# - notebook_phone_app (phone app for notebooks)
+# - invoice_phone_app (phone app for invoices)
 
 set -e  # Exit on any error
 
@@ -16,13 +19,19 @@ NC='\033[0m' # No Color
 
 # Script configuration
 SCRIPT_VERSION="1.0.0"
-RESOURCE_NAME="notebook_item"
+SUITE_NAME="fivem_resource_suite"
+RESOURCES=("notebook_item" "phone_apps/notebook_phone_app" "phone_apps/invoice_phone_app")
 
 # Function to print colored output
 print_header() {
     echo -e "${PURPLE}╔════════════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${PURPLE}║${NC}${CYAN}  Notebook Item Resource - Complete Setup Script v${SCRIPT_VERSION}${NC}${PURPLE}       ║${NC}"
+    echo -e "${PURPLE}║${NC}${CYAN}  FiveM Resource Suite - Deployment Script v${SCRIPT_VERSION}${NC}${PURPLE}        ║${NC}"
     echo -e "${PURPLE}╚════════════════════════════════════════════════════════════════╝${NC}"
+    echo ""
+    echo -e "${CYAN}Deploying complete resource suite:${NC}"
+    echo -e "${BLUE}  📓 notebook_item - Main notebook resource${NC}"
+    echo -e "${BLUE}  📱 notebook_phone_app - Phone app for notebooks${NC}"
+    echo -e "${BLUE}  💰 invoice_phone_app - Phone app for invoices${NC}"
     echo ""
 }
 
@@ -66,33 +75,32 @@ check_file() {
 
 # Function to validate resource structure
 validate_resource() {
-    print_step "Validating resource structure..."
+    print_step "Validating all resource structures..."
     
     local errors=0
     local warnings=0
     
-    # Check main resource directory
-    if ! check_directory "$RESOURCE_NAME"; then
-        print_error "Resource directory '$RESOURCE_NAME' not found"
-        ((errors++))
-    else
-        print_success "Resource directory found"
-    fi
+    # Check all resource directories
+    for resource in "${RESOURCES[@]}"; do
+        if ! check_directory "$resource"; then
+            print_error "Resource directory '$resource' not found"
+            ((errors++))
+        else
+            print_success "Resource directory found: $resource"
+        fi
+    done
     
-    # Check required files
-    local required_files=(
-        "${RESOURCE_NAME}/fxmanifest.lua"
-        "${RESOURCE_NAME}/client/main.lua"
-        "${RESOURCE_NAME}/server/main.lua"
-        "${RESOURCE_NAME}/shared/config.lua"
-        "items.txt"
-        "README.md"
-        "HOW_IT_WORKS.md"
-        "TECHNICAL_OVERVIEW.md"
-        "INTEGRATION_GUIDE.md"
+    # Check main notebook resource files
+    local notebook_files=(
+        "notebook_item/fxmanifest.lua"
+        "notebook_item/client/main.lua"
+        "notebook_item/server/main.lua"
+        "notebook_item/shared/config.lua"
+        "notebook_item/shared/advanced.lua"
     )
     
-    for file in "${required_files[@]}"; do
+    print_step "Validating notebook_item files..."
+    for file in "${notebook_files[@]}"; do
         if check_file "$file"; then
             print_success "Found: $file"
         else
@@ -101,14 +109,82 @@ validate_resource() {
         fi
     done
     
-    # Validate fxmanifest.lua content
-    if check_file "${RESOURCE_NAME}/fxmanifest.lua"; then
-        if grep -q "fx_version" "${RESOURCE_NAME}/fxmanifest.lua"; then
-            print_success "fxmanifest.lua has fx_version"
+    # Check notebook phone app files
+    local notebook_phone_files=(
+        "phone_apps/notebook_phone_app/fxmanifest.lua"
+        "phone_apps/notebook_phone_app/client/main.lua"
+        "phone_apps/notebook_phone_app/client/phone.lua"
+        "phone_apps/notebook_phone_app/server/main.lua"
+        "phone_apps/notebook_phone_app/shared/config.lua"
+        "phone_apps/notebook_phone_app/web/index.html"
+        "phone_apps/notebook_phone_app/web/style.css"
+        "phone_apps/notebook_phone_app/web/script.js"
+    )
+    
+    print_step "Validating phone_apps/notebook_phone_app files..."
+    for file in "${notebook_phone_files[@]}"; do
+        if check_file "$file"; then
+            print_success "Found: $file"
         else
-            print_warning "fxmanifest.lua missing fx_version"
+            print_error "Missing: $file"
+            ((errors++))
+        fi
+    done
+    
+    # Check invoice phone app files
+    local invoice_phone_files=(
+        "phone_apps/invoice_phone_app/fxmanifest.lua"
+        "phone_apps/invoice_phone_app/client/main.lua"
+        "phone_apps/invoice_phone_app/client/phone.lua"
+        "phone_apps/invoice_phone_app/server/main.lua"
+        "phone_apps/invoice_phone_app/shared/config.lua"
+        "phone_apps/invoice_phone_app/web/index.html"
+        "phone_apps/invoice_phone_app/web/style.css"
+        "phone_apps/invoice_phone_app/web/script.js"
+    )
+    
+    print_step "Validating invoice_phone_app files..."
+    for file in "${invoice_phone_files[@]}"; do
+        if check_file "$file"; then
+            print_success "Found: $file"
+        else
+            print_error "Missing: $file"
+            ((errors++))
+        fi
+    done
+    
+    # Check documentation files
+    local doc_files=(
+        "items.txt"
+        "README.md"
+        "HOW_IT_WORKS.md"
+        "TECHNICAL_OVERVIEW.md"
+        "INTEGRATION_GUIDE.md"
+        "PROJECT_STATUS.md"
+        "COMPLETION_SUMMARY.md"
+    )
+    
+    print_step "Validating documentation files..."
+    for file in "${doc_files[@]}"; do
+        if check_file "$file"; then
+            print_success "Found: $file"
+        else
+            print_warning "Missing: $file"
             ((warnings++))
         fi
+    done
+    
+    # Validate fxmanifest.lua content for each resource
+    for resource in "${RESOURCES[@]}"; do
+        if check_file "${resource}/fxmanifest.lua"; then
+            if grep -q "fx_version" "${resource}/fxmanifest.lua"; then
+                print_success "${resource} fxmanifest.lua has fx_version"
+            else
+                print_warning "${resource} fxmanifest.lua missing fx_version"
+                ((warnings++))
+            fi
+        fi
+    done
         
         if grep -q "game.*gta5" "${RESOURCE_NAME}/fxmanifest.lua"; then
             print_success "fxmanifest.lua configured for GTA5"
@@ -183,23 +259,35 @@ backup_existing() {
 install_resource() {
     local server_path="$1"
     
-    print_step "Installing resource to server..."
+    print_step "Installing all resources to server..."
     
-    # Create backup if existing installation found
-    backup_existing "$server_path"
+    local success_count=0
+    local total_count=${#RESOURCES[@]}
     
-    # Remove existing installation
-    if check_directory "${server_path}/${RESOURCE_NAME}"; then
-        rm -rf "${server_path}/${RESOURCE_NAME}"
-        print_info "Removed existing installation"
-    fi
+    for resource in "${RESOURCES[@]}"; do
+        print_step "Installing $resource..."
+        
+        # Create backup if existing installation found
+        if check_directory "${server_path}/${resource}"; then
+            local backup_path="${server_path}/${resource}_backup_$(date +%Y%m%d_%H%M%S)"
+            mv "${server_path}/${resource}" "$backup_path"
+            print_info "Backed up existing $resource to: $backup_path"
+        fi
+        
+        # Copy resource
+        if cp -r "./${resource}" "$server_path/"; then
+            print_success "$resource installed successfully"
+            ((success_count++))
+        else
+            print_error "Failed to install $resource"
+        fi
+    done
     
-    # Copy resource
-    if cp -r "./${RESOURCE_NAME}" "$server_path/"; then
-        print_success "Resource installed successfully"
+    print_info "Installation summary: $success_count/$total_count resources installed"
+    
+    if [ $success_count -eq $total_count ]; then
         return 0
     else
-        print_error "Failed to install resource"
         return 1
     fi
 }
@@ -212,18 +300,32 @@ update_server_cfg() {
     print_step "Checking server.cfg configuration..."
     
     if check_file "$server_cfg"; then
-        if grep -q "ensure ${RESOURCE_NAME}" "$server_cfg"; then
-            print_success "Resource already configured in server.cfg"
-        else
-            print_step "Adding resource to server.cfg..."
+        local all_configured=true
+        
+        for resource in "${RESOURCES[@]}"; do
+            if grep -q "ensure ${resource}" "$server_cfg"; then
+                print_success "$resource already configured in server.cfg"
+            else
+                all_configured=false
+                break
+            fi
+        done
+        
+        if [ "$all_configured" = false ]; then
+            print_step "Adding resources to server.cfg..."
             echo "" >> "$server_cfg"
-            echo "# Notebook Item Resource" >> "$server_cfg"
-            echo "ensure ${RESOURCE_NAME}" >> "$server_cfg"
-            print_success "Added resource to server.cfg"
+            echo "# FiveM Resource Suite - Notebook and Invoice System" >> "$server_cfg"
+            echo "ensure notebook_item" >> "$server_cfg"
+            echo "ensure phone_apps/notebook_phone_app" >> "$server_cfg"
+            echo "ensure phone_apps/invoice_phone_app" >> "$server_cfg"
+            print_success "Added all resources to server.cfg"
         fi
     else
         print_warning "server.cfg not found at expected location: $server_cfg"
-        print_info "Please manually add 'ensure ${RESOURCE_NAME}' to your server.cfg"
+        print_info "Please manually add these lines to your server.cfg:"
+        print_info "  ensure notebook_item"
+        print_info "  ensure phone_apps/notebook_phone_app"
+        print_info "  ensure phone_apps/invoice_phone_app"
     fi
 }
 

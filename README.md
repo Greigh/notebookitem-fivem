@@ -1,33 +1,68 @@
-# Enhanced Multi-Item FiveM Resource
+# 📓 Enhanced Notebook Item FiveM Resource
 
-A comprehensive FiveM resource for qbox framework that adds multiple usable items with metadata storage capabilities. This enhanced version supports notebooks, journals, business cards, and photo descriptions. Currently at version 1.0.1, this resource is based off of a month or so of learning and development, and is designed to be easily integrated into existing FiveM roleplay servers.
+A focused FiveM resource for qbox/qbx_core servers that provides advanced notebook functionality for four specific item types. This resource offers rich metadata tracking, modern UI, and seamless integration with ox_inventory and ox_lib.
 
-## 🆕 **Enhanced Features**
+## 📓 **Notebook Items Only**
 
-### **Multiple Item Types**
+This resource is specifically designed for notebook-related items and strictly validates that only supported notebook items are processed:
 
-- **📔 Personal Notebook**: Quick notes and thoughts (500 chars)
-- **📖 Daily Journal**: Extended entries for detailed experiences (1000 chars)
-- **💼 Business Card**: Professional contact information (300 chars)
-- **📷 Personal Photo**: Photo descriptions and memories (250 chars)
+- **📔 notebook** - Personal notes and thoughts
+- **📖 journal** - Extended diary entries  
+- **💼 businesscard** - Professional contact information
+- **📷 photo** - Photo descriptions and memories
+
+**Note**: Phone apps and other item types are handled in separate repositories for better modularity and focused functionality.-Item FiveM Resource
+
+A comprehensive FiveM resource for qbox/qbx_core servers that provides advanced notebook functionality with support for multiple item types. This resource offers rich metadata tracking, modern UI, and seamless integration with ox_inventory and ox_lib.
+
+## 📱 **Phone Apps Available Separately**
+
+**� Phone Apps Repository**: [FiveM-phone](https://github.com/Greigh/FiveM-phone)
+
+The phone apps have been moved to a separate repository for better modularity:
+
+- **📱 notebook_phone_app**: Access and edit notebooks via phone
+- **💰 invoice_phone_app**: Professional invoice management system  
+- **🚀 unified_phone_app**: Combined notebook + invoice interface
+
+## 📓 **Core Resource Features**
+
+### **Main Resource**
+
+- **📓 notebook_item**: Advanced notebook resource with 4 item types
+
+## 🆕 **Key Features**
+
+### **Supported Notebook Items**
+
+- **📔 notebook**: Personal notes and quick thoughts (500 characters)
+- **📖 journal**: Extended diary entries for detailed experiences (1000 characters)
+- **💼 businesscard**: Professional contact information (300 characters)
+- **📷 photo**: Photo descriptions and memories (250 characters)
 
 ### **Advanced Functionality**
 
+- **Strict Validation**: Only processes the 4 supported notebook item types
 - **Smart UI**: Each item type has custom icons and placeholders
 - **Character Limits**: Different limits per item type for appropriate usage
 - **Metadata Tracking**: Stores author, timestamp, and item type
 - **Admin Tools**: `/checkitem [slot]` command for administrators
-- **Backwards Compatibility**: Supports old notebook system
+- **Error Handling**: Clear feedback for unsupported items
 
 ## 🎯 **Use Cases**
 
 ### **Roleplay Scenarios**
 
-- **Journalists** can use journals for article drafts
-- **Business owners** can exchange business cards with contact info
-- **Photographers** can catalog their work with descriptions
-- **Students** can take notes during classes
+- **Journalists** can use journals for article drafts and notes
+- **Business owners** can create and exchange business cards
+- **Photographers** can catalog their work with photo descriptions
+- **Students** can take notes during classes using notebooks
 - **Investigators** can document evidence and observations
+- **Citizens** can maintain personal diaries and journals
+
+### **Supported Items Only**
+
+This resource strictly processes only the four supported notebook item types. Any other item types will be rejected with clear error messages, ensuring focused functionality and preventing conflicts with other systems.
 
 ## 📋 **Dependencies**
 
@@ -36,6 +71,8 @@ A comprehensive FiveM resource for qbox framework that adds multiple usable item
 - [ox_lib](https://github.com/overextended/ox_lib) - UI library and utilities
 
 ## 🚀 **Installation**
+
+### **Automated Installation (Recommended)**
 
 1. **Download the Resource**
 
@@ -51,14 +88,23 @@ A comprehensive FiveM resource for qbox framework that adds multiple usable item
    ./install.sh
    ```
 
-3. **Add to server.cfg**
+### **Manual Installation**
+
+1. **Copy Resource to Server**
+
+   ```bash
+   cp -r notebook_item /path/to/your/server/resources/
+   ```
+
+2. **Add to server.cfg**
 
    ```cfg
    ensure notebook_item
    ```
 
-4. **Add Items to ox_inventory**
-   - Copy all item definitions from `items.txt` to your `ox_inventory/data/items.lua`
+3. **Add Items to ox_inventory**
+   - Copy items from `items.txt` to your ox_inventory items.lua
+   - Or use the automated script to add them
 
 ## 📝 **Item Definitions**
 
@@ -160,9 +206,10 @@ config.items = {
 
 ### **Compatibility**
 
-- Backwards compatible with original notebook system
-- Works with existing qbox/ox_inventory setups
-- Supports multiple FiveM server versions
+- **Notebook-focused**: Designed specifically for the 4 supported notebook item types
+- **QBox/QBX Integration**: Full compatibility with qbox/qbx_core framework
+- **ox_inventory**: Seamless integration with ox_inventory system
+- **Server Compatibility**: Works with multiple FiveM server versions
 
 ## 🏗️ **File Structure**
 
@@ -180,6 +227,14 @@ notebook_item/
 
 ## 🔄 **Changelog**
 
+### **v1.1.0 - Notebook-Only Consolidation**
+
+- ✅ **Strict Validation**: Only processes the 4 supported notebook item types
+- ✅ **Enhanced Security**: Rejects unsupported items with clear error messages
+- ✅ **Focused Functionality**: Removed all non-notebook logic for better performance
+- ✅ **Improved Validation**: Better error handling and user feedback
+- ✅ **Code Cleanup**: Consolidated codebase for notebook items only
+
 ### **v1.0.1 - Enhanced Multi-Item System**
 
 - ✅ Added journal, business card, and photo items
@@ -195,11 +250,38 @@ notebook_item/
 - ✅ Metadata storage
 - ✅ Server-side validation
 
+## 🧩 **Development Setup**
+
+### **Lua Diagnostics Configuration**
+
+This resource includes proper Lua Language Server configuration for VS Code to eliminate diagnostics warnings during development.
+
+**Key Features:**
+
+- ✅ **FiveM Globals**: All common FiveM functions are recognized (`TriggerEvent`, `RegisterNetEvent`, etc.)
+- ✅ **Framework Support**: QBX, ESX, ox_lib globals are included
+- ✅ **Server Functions**: Server-side functions like `GetPlayers`, `TriggerClientEvent` are configured
+- ✅ **Clean Development**: No false positive errors for valid FiveM code
+
+**Setup Instructions:**
+
+1. Install the Lua Language Server extension in VS Code (`sumneko.lua`)
+2. The `.luarc.json` file is already configured for FiveM development
+3. Restart the Lua Language Server: `Cmd+Shift+P` → `Lua: Restart Server`
+
+**Files Included:**
+
+- `.luarc.json` - Main Lua configuration
+- `.vscode/settings.json` - VS Code workspace settings
+- `LUA_DIAGNOSTICS_SETUP.md` - Detailed setup documentation
+
+For more details, see the [Lua Diagnostics Setup Guide](LUA_DIAGNOSTICS_SETUP.md).
+
 ## 📞 **Support**
 
-- **Documentation**: Check the `docs/` folder for detailed guides
+- **Documentation**: Check the project documentation for detailed guides
 - **Issues**: Report bugs via GitHub Issues
-- **Wiki**: Visit the project wiki for advanced usage examples
+- **Validation**: Use `./validate.sh` to check your installation
 
 ## 📄 **License**
 
@@ -210,9 +292,9 @@ MIT License - see LICENSE file for details
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Run validation tests
+4. Run validation tests with `./validate.sh`
 5. Submit a pull request
 
 ---
 
-### Made with ❤️ for the Rebirth FiveM roleplay community
+### 📓 Enhanced Notebook Item Resource - Focused on notebook functionality only

@@ -2,15 +2,29 @@
 
 This document explains all the scripts included in the notebook item resource project and how to use them.
 
+## Project Structure
+
+The resource is focused on notebook items only:
+
+- **notebook_item/**: Core notebook functionality resource for 4 supported item types
+  - **notebook** - Personal notes and thoughts
+  - **journal** - Extended diary entries
+  - **businesscard** - Professional contact information  
+  - **photo** - Photo descriptions and memories
+
+**Note**: Phone apps and other integrations are handled in separate repositories for better modularity.
+
+All scripts have been updated to work with this notebook-only structure.
+
 ## Master Control Script
 
 ### `notebook.sh` - Interactive Master Control
 
-The main script that provides a unified interface for all operations.
+The main script that provides a unified interface for all notebook resource operations.
 
 ```bash
 ./notebook.sh                    # Interactive menu
-./notebook.sh validate          # Run validation
+./notebook.sh validate          # Run validation for notebook items
 ./notebook.sh build             # Build package
 ./notebook.sh deploy            # Deploy to server
 ./notebook.sh install           # Quick install
@@ -26,12 +40,28 @@ The main script that provides a unified interface for all operations.
 - Developer tools submenu
 - Documentation viewer
 - Project status overview
+- Notebook-only validation and testing
+
+## Notebook Item Validation
+
+### Supported Items Only
+
+The resource strictly validates and processes only these 4 item types:
+
+- **notebook**: Personal notes and thoughts (500 character limit)
+- **journal**: Extended diary entries (1000 character limit)
+- **businesscard**: Professional contact information (300 character limit)
+- **photo**: Photo descriptions and memories (250 character limit)
+
+### Validation Process
+
+Any item not in the supported list will be rejected with clear error messages, ensuring focused functionality and preventing conflicts.
 
 ## Individual Scripts
 
 ### `validate.sh` - Resource Validation
 
-Validates the resource structure and checks for common issues.
+Validates the notebook resource structure and checks for common issues.
 
 ```bash
 ./validate.sh                   # Full validation
@@ -40,14 +70,18 @@ Validates the resource structure and checks for common issues.
 
 **Checks:**
 
-- Required files exist
+- Required files exist for notebook_item resource
 - Lua syntax validation
 - fxmanifest.lua configuration
 - Export function presence
+- Notebook item configuration validation
+- Item type support verification
+- Notebook item limit validation
+- Icon and asset verification
 
 ### `build.sh` - Build and Package
 
-Creates distribution packages and release archives.
+Creates distribution packages and release archives for the notebook item resource.
 
 ```bash
 ./build.sh                      # Full build process
@@ -58,8 +92,24 @@ Creates distribution packages and release archives.
 
 - Complete installation package (ZIP)
 - Resource-only release archive (ZIP)
+- Notebook item configuration packages
 - SHA256 checksums
 - Build manifest (JSON)
+
+### Notebook Item Deployment
+
+The build script focuses on the notebook item resource:
+
+```bash
+./build.sh                      # Builds the notebook_item resource
+```
+
+**Package Contents:**
+
+- notebook_item resource folder
+- Installation scripts
+- Configuration files
+- Documentation
 
 ### `deploy.sh` - Server Deployment
 
@@ -76,12 +126,30 @@ Comprehensive deployment script with validation and configuration.
 - Automatic backup of existing installations
 - server.cfg configuration
 - ox_inventory integration check
+- Notebook item configuration validation
+- Item type support verification
 - Installation testing
 - Detailed reporting
 
+### Deployment Options
+
+The deployment script focuses on notebook items only:
+
+```bash
+./deploy.sh                     # Interactive deployment with notebook validation
+./deploy.sh --notebook-only     # Deploy only the notebook_item resource
+```
+
+**Resource Integration:**
+
+- **qbox/qbx_core**: Framework compatibility validation
+- **ox_inventory**: Item definition setup
+- **ox_lib**: UI library integration
+- Notebook item validation and testing
+
 ### `install.sh` - Simple Installation
 
-Basic installation script for copying resource to server.
+Basic installation script for copying the notebook resource to server.
 
 ```bash
 ./install.sh                    # Interactive installation
@@ -100,40 +168,54 @@ Basic installation script for copying resource to server.
 1. **Development Workflow:**
 
    ```bash
-   # Make changes to code
-   ./notebook.sh validate        # Validate changes
-   ./notebook.sh build           # Build package
+   # Make changes to code (notebook_item or phone_apps)
+   ./notebook.sh validate        # Validate all resources
+   ./notebook.sh build           # Build complete suite
    ./notebook.sh test            # Test installation
    ```
 
-2. **Release Workflow:**
+2. **Phone App Development:**
 
    ```bash
-   ./notebook.sh validate        # Final validation
-   ./notebook.sh build           # Create distribution
+   # Working on phone apps specifically
+   ./validate.sh                 # Validate phone app structure
+   # Test individual phone apps
+   # Modify web UI files in phone_apps/*/web/
+   ./build.sh                    # Build updated packages
+   ```
+
+3. **Release Workflow:**
+
+   ```bash
+   ./notebook.sh validate        # Final validation of all resources
+   ./notebook.sh build           # Create distribution packages
    # Upload dist/*.zip to GitHub releases
    ```
 
 ### For Server Administrators
 
-1. **First Time Installation:**
+1. **Complete Suite Installation:**
 
    ```bash
-   ./notebook.sh install         # Quick install
+   ./notebook.sh install         # Install all resources
    # OR
-   ./deploy.sh                   # Full deployment
+   ./deploy.sh                   # Full deployment with phone apps
    ```
 
-2. **Testing Installation:**
+2. **Phone Apps Only:**
 
    ```bash
-   ./notebook.sh test            # Test current installation
+   ./deploy.sh --phone-apps-only # Install only phone applications
    ```
 
-3. **Updating Resource:**
+3. **Selective Installation:**
 
    ```bash
-   ./deploy.sh                   # Handles backup automatically
+   # Copy individual resources as needed:
+   # - notebook_item/ (core functionality)
+   # - phone_apps/notebook_phone_app/
+   # - phone_apps/invoice_phone_app/
+   # - phone_apps/unified_phone_app/
    ```
 
 ## Script Features
@@ -270,6 +352,58 @@ post_deploy_hook() {
    pwd                        # Verify current directory
    ```
 
+### Phone App Issues
+
+1. **Phone App Not Showing**
+
+   ```bash
+   # Check phone system compatibility
+   # Verify phone_apps folder structure
+   # Check fxmanifest.lua client_scripts
+   ```
+
+2. **Web UI Not Loading**
+
+   ```bash
+   # Verify web/ folder exists in phone app
+   # Check HTML/CSS/JS files are present
+   # Validate NUI callbacks registration
+   ```
+
+3. **Icons Missing (lb-phone)**
+
+   ```bash
+   # Check if icon.png exists in phone app root
+   # Verify icon path in fxmanifest.lua
+   # Follow lb-phone icon setup guide
+   ```
+
+### Phone System Specific
+
+1. **qb-phone Integration**
+
+   ```bash
+   # Ensure qb-phone is running
+   # Check exports are correctly configured
+   # Verify phone app registration
+   ```
+
+2. **lb-phone Integration**
+
+   ```bash
+   # Verify lb-phone app registration
+   # Check icon file placement
+   # Validate app manifest format
+   ```
+
+3. **qs-smartphone Integration**
+
+   ```bash
+   # Check qs-smartphone configuration
+   # Verify app registration method
+   # Validate callback structure
+   ```
+
 ### Debug Mode
 
 Most scripts support verbose output:
@@ -308,6 +442,24 @@ The included `.github/workflows/validate.yml` uses these scripts:
 - Maintain color coding standards
 - Update version numbers when modifying
 
+### Phone App Development
+
+- Test on all supported phone systems
+- Maintain responsive web UI design
+- Follow phone system specific guidelines:
+  - **qb-phone**: Use qb-phone app structure
+  - **lb-phone**: Include proper icon files and registration
+  - **qs-smartphone**: Follow qs app manifest format
+- Keep web assets optimized for mobile view
+- Use consistent UI/UX patterns across apps
+
+### Resource Structure
+
+- Keep phone apps in the `phone_apps/` directory
+- Maintain consistent folder structure across apps
+- Use modular code organization (client/server/shared)
+- Document phone system compatibility clearly
+
 ### Version Control
 
 - Commit scripts with the resource
@@ -320,4 +472,4 @@ The included `.github/workflows/validate.yml` uses these scripts:
 - Include usage examples for new options
 - Document any external dependencies
 
-This script ecosystem provides a complete solution for developing, building, testing, and deploying the notebook item resource efficiently and reliably.
+This script ecosystem provides a complete solution for developing, building, testing, and deploying the entire notebook resource suite efficiently and reliably. The suite includes the core notebook_item resource and comprehensive phone app integrations for all major FiveM phone systems.

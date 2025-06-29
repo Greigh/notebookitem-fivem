@@ -3,8 +3,8 @@ game 'gta5'
 
 name 'notebook_item'
 author 'Greigh'
-description 'Enhanced multi-item resource with notebook, journal, business card, and photo functionality'
-version '1.0.1'
+description 'Focused notebook resource with 4 notebook item types: notebook, journal, business card, and photo'
+version '1.1.0'
 
 dependencies {
     'qbx_core',

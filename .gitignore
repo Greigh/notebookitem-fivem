@@ -47,8 +47,15 @@ dist/
 *.md
 !README.md
 !SCRIPT_DOCUMENTATION.md
+!INTEGRATION_GUIDE.md
 
 # Personal scripts (optional - these are actually useful for others)
 # *.sh
 # !validate.sh
 # !notebook.sh
+
+# Phone apps are in separate repository
+phone_apps/*
+phone_apps/
+
+*.ipynb
