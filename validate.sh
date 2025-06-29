@@ -60,8 +60,6 @@ echo -e "${PURPLE}📚 Validating documentation and scripts...${NC}"
 doc_files=(
     "items.txt"
     "README.md"
-    "HOW_IT_WORKS.md"
-    "TECHNICAL_OVERVIEW.md"
     "INTEGRATION_GUIDE.md"
     "deploy.sh"
     "build.sh"
